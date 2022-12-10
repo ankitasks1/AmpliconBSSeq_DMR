@@ -18,12 +18,22 @@
 #ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R2.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R2.fa"}' > minus_BiQsheetreplicate2.tsv
 
 #Note:***************************** VERY IMPORTANT: ADD HEADER to EACH TSV Files otherwise it will not take the first file ****************************
+#Format will look like (header is must)
+alsp_minus_BiQsheetNnSeries_as2B_R1
+S54_as2B	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R1.fa	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/S54_as2B_R1.fa
+S55_as2B	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R1.fa	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/S55_as2B_R1.fa
 
 #Get names ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1" "$1"_L001_R1_001"" "$1"_L001_R2_001"}'
+
 #Import BiQ Analyzer Samplesheet to BiQ HiMOD
+
+
 #Run BiQ Analyzer (Double click icon --> Create new project --> Click directory where you want result --> Load from data structure table (.tsv) --> press |> run)
+
 #Export -> All results in one TSV -> table_results.tsv
+
 #Make another file which contain information about group sample_color.txt eg. N15_S7	Downs	N15_S7%Downs
+
 #Run Python on reference fasta to get CG positions, determine_CpG_position_reverse.py (reverse because Nnat was reverse)
 
 
