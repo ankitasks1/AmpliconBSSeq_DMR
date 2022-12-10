@@ -24,6 +24,8 @@ S54_as2B	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/f
 S55_as2B	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R1.fa	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/S55_as2B_R1.fa
 
 #Get names ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1" "$1"_L001_R1_001"" "$1"_L001_R2_001"}'
+#For allele specific data Set1 and set2 both were created in one folder so they NnS series.tsv
+
 
 #Import BiQ Analyzer Samplesheet to BiQ HiMOD
 
@@ -36,5 +38,8 @@ S55_as2B	/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/f
 
 #Run Python on reference fasta to get CG positions, determine_CpG_position_reverse.py (reverse because Nnat was reverse)
 
+#Use python to compare results
+python tabstsv_split_R2.py > set1nset2_meth_pattern_as1B_bypython_R2.txt
+#Remove first column
+grep "Sample" set1nset2_meth_pattern_as1B_bypython_R2.txt -v > set1nset2_meth_pattern_as1B_bypython_R2_re.txt
 
-#For allele specific data Set1 and set2 both were created in one folder so they NnS series.tsv
