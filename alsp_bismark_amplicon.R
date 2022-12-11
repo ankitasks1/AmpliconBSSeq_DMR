@@ -1,3 +1,5 @@
+library(ggplot2)
+library(ChAMP) #Just to load right stack
 setwd("/media/ankitv/Archivio2/ankit/bs-seq/human/fastq_Laura/fastq_Laura/allele_sp/")
 SNPa <- read.table("/home/ankitv/ref_av/Snpfiles/custom_commonSNPrefalt_GRCh38_Acomb_Snpfile.txt")
 SNPb <- read.table("/home/ankitv/ref_av/Snpfiles/custom_commonSNPrefalt_GRCh38_Bcomb_Snpfile.txt")
@@ -14,7 +16,7 @@ S49_covA_alt["Group"] <- "S49_covA_alt"
 dim(S49_covA_alt)
 colnames(S49_covA_alt) <- c("chr","start","end","cov","M","U","Group")
 S49_covA_alt["logcount"] <- log2(S49_covA_alt$M + S49_covA_alt$U)
-
+library(ggplot2)
 S49_covA <- rbind.data.frame(S49_covA_ref,S49_covA_alt)
 ggplot(S49_covA, aes(x=as.numeric(start), y=cov))+
   geom_line(aes(color=Group))+
@@ -1382,7 +1384,7 @@ ggsave("count_S54_to_S58_R1_patternst.svg", width=10*1.25, height=6*1.25, units=
 
 #Get names ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1" "$1"_L001_R1_001"" "$1"_L001_R2_001"}'
 #Import BiQ Analyzer Samplesheet to BiQ HiMOD
-#Run BiQ Analyzer
+#Run BiQ Analyzer (Double click icon --> Create new project --> Click directory where you want result --> Load from data structure table (.tsv) --> press |> run)
 #Export -> All results in one TSV -> table_results.tsv
 #Make another file which contain information about group sample_color.txt eg. N15_S7	Downs	N15_S7%Downs
 #Run Python on reference fasta to get CG positions, determine_CpG_position_reverse.py (reverse because Nnat was reverse)
@@ -1403,7 +1405,7 @@ rownames(set2_meth_pattern_bypython_minus_R1) <- paste0(set2_meth_pattern_bypyth
                                                         set2_meth_pattern_bypython_minus_R1$V2)
 set2_meth_pattern_bypython_minus_R1 <- set2_meth_pattern_bypython_minus_R1[,-1]
 head(set2_meth_pattern_bypython_minus_R1)
-
+dim(set2_meth_pattern_bypython_minus_R1)
 #Check of reads covered 
 #Total reads after python based CpG extraction wc -l set2_meth_pattern_bypython_R1_re.txt = 549173 
 #Total reads in N series R1 (divide by 2 as fasta first lines are >header) wc -l /media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/*_R1.fa = 1098586/2 = 549173
@@ -1586,6 +1588,7 @@ grep "Sample" set1_meth_pattern_bypython_R1.txt -v > set1_meth_pattern_bypython_
 #---
 set1_meth_pattern_bypython_minus_R1 <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/fastq_Laura/fastq_Laura/minus_ref_subNnat_R1_Sseries/set1_meth_pattern_bypython_R1_re.txt", header = F, stringsAsFactors = F)
 head(set1_meth_pattern_bypython_minus_R1)
+dim(set1_meth_pattern_bypython_minus_R1)
 rownames(set1_meth_pattern_bypython_minus_R1) <- paste0(set1_meth_pattern_bypython_minus_R1$V1, "%",
                                                         set1_meth_pattern_bypython_minus_R1$V2)
 set1_meth_pattern_bypython_minus_R1 <- set1_meth_pattern_bypython_minus_R1[,-1]
@@ -1662,6 +1665,7 @@ rownames(set1_meth_pattern_bypython_minus_R2) <- paste0(set1_meth_pattern_bypyth
                                                         set1_meth_pattern_bypython_minus_R2$V2)
 set1_meth_pattern_bypython_minus_R2 <- set1_meth_pattern_bypython_minus_R2[,-1]
 head(set1_meth_pattern_bypython_minus_R2)
+dim(set1_meth_pattern_bypython_minus_R2)
 set1_meth_pattern_bypython_minus_R2[set1_meth_pattern_bypython_minus_R2 == "x"] <- NA
 
 #Remove NAs
@@ -1986,12 +1990,14 @@ head(study_participants_info_medianmeth)
 dim(study_participants_info_medianmeth)
 writexl::write_xlsx(study_participants_info_medianmeth, "/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/study_participants_info_medianmeth.xlsx")
 plot(study_participants_info_medianmeth$age, study_participants_info_medianmeth$Medians)
+write.table(study_participants_info_medianmeth, "/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/study_participants_info_medianmeth.txt", quote = F, sep = F, append = F)
 
+study_participants_info_medianmeth <- read.delim("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/study_participants_info_medianmeth.txt")
 #Scatter plot
-ggplot(study_participants_info_medianmeth, aes(x=age, y=Medians, color = sample_2)) +
+ggplot(study_participants_info_medianmeth, aes(x=age, y=Medians, color = condition)) +
   geom_point(size=2, shape=23)+theme_classic()+
   scale_color_manual(values = c("#00CC00","red"))+
-  geom_smooth(method=lm, se=FALSE, linetype="dashed")
+  geom_smooth(method=lm, se=FALSE, linetype="dashed")+ylim(0,1)
 
 ggsave("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/Scatter_set1nset2_tab_ref_subNnat_minus_R1nR2_SNseries_py_aggregate_col_merge_re.png", width=9*1.25, height=8*1.25, units="cm", dpi=96)
 
@@ -2001,6 +2007,7 @@ ggsave("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fa
 #Read 2 is also in  reverse as checked in IGV and fasta and BiQ alignmnet both for read and ref, 
 #minus_as1B ref will be ok to use, assignment to CG position in reverse coordinataes will be Ok
 #minus_as1B_R2
+#set1 and set2 analysed in one go
 #Use python to compare results
 python tabstsv_split_R2.py > set1nset2_meth_pattern_as1B_bypython_R2.txt
 #Remove first column
@@ -2250,6 +2257,310 @@ for (j in unique(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R2_NnSseries_py_het$S
 
 #save as set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R2_NnSseries_py_het_control1_11.pdf
 
+#**************-------------------*****************#
+#Read 1 is also in  reverse as checked in IGV and fasta and BiQ alignmnet both for read and ref, 
+#minus_as1B_R1
+
+#Read 2 is also in  reverse as checked in IGV and fasta and BiQ alignmnet both for read and ref, 
+#minus_as1B ref will be ok to use, assignment to CG position in reverse coordinataes will be Ok
+#minus_as1B_R1
+#set1 and set2 analysed in one go
+#Use python to compare results
+python tabstsv_split_R1.py > set1nset2_meth_pattern_as1B_bypython_R1.txt
+#Remove first column
+grep "Sample" set1nset2_meth_pattern_as1B_bypython_R1.txt -v > set1nset2_meth_pattern_as1B_bypython_R1_re.txt
+
+set1nset2_meth_pattern_bypython_minus_as1B_R1 <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/minus_ref_subNant_NnS_as1B_R1/set1nset2_meth_pattern_as1B_bypython_R1_re.txt", header = F, stringsAsFactors = F)
+head(set1nset2_meth_pattern_bypython_minus_as1B_R1)
+dim(set1nset2_meth_pattern_bypython_minus_as1B_R1)
+rownames(set1nset2_meth_pattern_bypython_minus_as1B_R1) <- paste0(set1nset2_meth_pattern_bypython_minus_as1B_R1$V1, "%",
+                                                                  set1nset2_meth_pattern_bypython_minus_as1B_R1$V2)
+set1nset2_meth_pattern_bypython_minus_as1B_R1 <- set1nset2_meth_pattern_bypython_minus_as1B_R1[,-1]
+head(set1nset2_meth_pattern_bypython_minus_as1B_R1)
+set1nset2_meth_pattern_bypython_minus_as1B_R1[set1nset2_meth_pattern_bypython_minus_as1B_R1 == "x"] <- NA
+
+#Remove NAs
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py <- na.omit(set1nset2_meth_pattern_bypython_minus_as1B_R1)
+head(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py)
+dim(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py) #Same number as R step
+summary(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py <- set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py[,c(1,3:14)]
+colnames(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py) <- c("Sample", "CG1r1","CG2r1","CG3r1","CG4r1","CG5r1","CG6r1","CG7r1","CG8r1","CG9r1","CG10r1","CG11r1","CG12r1")
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG1r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG1r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG2r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG2r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG3r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG3r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG4r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG4r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG5r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG5r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG6r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG6r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG7r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG7r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG8r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG8r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG9r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG9r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG10r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG10r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG11r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG11r1)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG12r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$CG12r1)
+
+dim(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py)
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate = aggregate(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py[,c(2:13)],by=list(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py$Sample), mean)
+head(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate)
+rownames(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate) <- set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate$Group.1
+pheatmap::pheatmap(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate[,2:13])
+colnames(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate) <- c("Sample","CG1r1","CG2r1","CG3r1","CG4r1","CG5r1","CG6r1","CG7r1","CG8r1","CG9r1","CG10r1","CG11r1","CG12r1")
+
+#Take only heterozygosity samples
+study_participants_info_het_as1B <- data.frame(paste0(study_participants_info_het$Sample1,"_as1B"))
+colnames(study_participants_info_het_as1B) <- "Sample"
+as1Bnewsample_R1_color <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/sample_color_as1B.txt")
+colnames(as1Bnewsample_R1_color) <- c("Sample","Condition","Combine")
+
+as1Bnewsample_R1_color_het <- merge(as1Bnewsample_R1_color, study_participants_info_het_as1B, by="Sample")
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col <- merge(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate, as1Bnewsample_R1_color_het, by="Sample")
+rownames(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col) <- set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col$Combine
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col <- set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col[,c(2:13)]
+head(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col)
+#Remove undetermined
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col <- set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col[c(-48),]
+sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col <- stack(as.matrix(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col))
+head(sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col)
+write.table(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col,"/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/minus_ref_subNant_NnS_as1B_R1/set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col.txt", sep = "\t", quote = F, append = F)
+sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col <- data.frame(sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col)
+sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col <- splitstackshape::cSplit(sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col,"row","%")
+sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col <- data.frame(sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col)
+#python3 determine_CpG_position_reverse.py  enter-- /media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R1_nospace.fa
+as1Bref_Nnat_CGsitesR1 <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/minus_ref_subNant_NnS_as1B_R1/CGSites.txt")
+colnames(as1Bref_Nnat_CGsitesR1) <- c("col", "sites")
+sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg <- merge(sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_col, as1Bref_Nnat_CGsitesR1, by="col")
+dim(sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg)
+
+
+
+#Set1 and set2 R1 Cases 1-13
+set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het <- merge(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py, as1Bnewsample_R1_color_het, by="Sample", all.y=T)
+dim(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het)
+plot_list=list()
+for (j in unique(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het$Sample)[c(1:24)]){
+  samplecodes <- j
+  print(samplecodes)
+  altempframe <- set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het[which(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het$Sample == samplecodes),]
+  #print(tempframe)
+  alpheatmapoutput <- pheatmap::pheatmap(altempframe[,2:14],color = colorRampPalette(c("darkblue", "white", "firebrick3"))(length(breaksListd)), breaks = breaksListd,fontsize = 7,clustering_distance_cols = "euclidean",cluster_rows = F,cluster_cols = F,clustering_method = "ward.D", border_color = "white",show_rownames = F, show_colnames = F,cellwidth = 2,legend = F,labels_col = T, main= samplecodes)
+  plot_list[[samplecodes]] <- alpheatmapoutput[[4]]
+  grid.arrange(grobs=plot_list, ncol=7, nrow=2)
+}
+
+#save as set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het_cases1_13.pdf
+
+#Set1 and set2 R1 Control 1-11
+
+plot_list=list()
+for (j in unique(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het$Sample)[c(14:24)]){
+  samplecodes <- j
+  print(samplecodes)
+  altempframe <- set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het[which(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het$Sample == samplecodes),]
+  #print(tempframe)
+  alpheatmapoutput <- pheatmap::pheatmap(altempframe[,2:14],color = colorRampPalette(c("darkblue", "white", "firebrick3"))(length(breaksListd)), breaks = breaksListd,fontsize = 7,clustering_distance_cols = "euclidean",cluster_rows = F,cluster_cols = F,clustering_method = "ward.D", border_color = "white",show_rownames = F, show_colnames = F,cellwidth = 2,legend = F,labels_col = T, main= samplecodes)
+  plot_list[[samplecodes]] <- alpheatmapoutput[[4]]
+  grid.arrange(grobs=plot_list, ncol=7, nrow=2)
+}
+
+#save as set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het_control1_11.pdf
+
+#Read 2 is also in  reverse as checked in IGV and fasta and BiQ alignmnet both for read and ref, 
+#minus_as2B ref will be ok to use, assignment to CG position in reverse coordinataes will be Ok
+#minus_as2B_R1
+#Use python to compare results
+python tabstsv_split_R1.py > set1nset2_meth_pattern_as2B_bypython_R1.txt
+#Remove first column
+grep "Sample" set1nset2_meth_pattern_as2B_bypython_R1.txt -v > set1nset2_meth_pattern_as2B_bypython_R1_re.txt
+
+set1nset2_meth_pattern_bypython_minus_as2B_R1 <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/minus_ref_subNant_NnS_as2B_R1/set1nset2_meth_pattern_as2B_bypython_R1_re.txt", header = F, stringsAsFactors = F)
+head(set1nset2_meth_pattern_bypython_minus_as2B_R1)
+dim(set1nset2_meth_pattern_bypython_minus_as2B_R1)
+rownames(set1nset2_meth_pattern_bypython_minus_as2B_R1) <- paste0(set1nset2_meth_pattern_bypython_minus_as2B_R1$V1, "%",
+                                                                  set1nset2_meth_pattern_bypython_minus_as2B_R1$V2)
+set1nset2_meth_pattern_bypython_minus_as2B_R1 <- set1nset2_meth_pattern_bypython_minus_as2B_R1[,-1]
+head(set1nset2_meth_pattern_bypython_minus_as2B_R1)
+set1nset2_meth_pattern_bypython_minus_as2B_R1[set1nset2_meth_pattern_bypython_minus_as2B_R1 == "x"] <- NA
+
+#Remove NAs
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py <- na.omit(set1nset2_meth_pattern_bypython_minus_as2B_R1)
+head(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py)
+dim(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py) #Same number as R step
+summary(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py <- set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py[,c(1,3:14)]
+colnames(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py) <- c("Sample", "CG1r1","CG2r1","CG3r1","CG4r1","CG5r1","CG6r1","CG7r1","CG8r1","CG9r1","CG10r1","CG11r1","CG12r1")
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG1r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG1r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG2r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG2r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG3r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG3r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG4r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG4r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG5r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG5r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG6r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG6r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG7r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG7r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG8r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG8r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG9r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG9r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG10r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG10r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG11r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG11r1)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG12r1 <- as.numeric(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$CG12r1)
+
+dim(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py)
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate = aggregate(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py[,c(2:13)],by=list(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py$Sample), mean)
+head(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate)
+rownames(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate) <- set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate$Group.1
+pheatmap::pheatmap(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate[,2:13])
+colnames(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate) <- c("Sample","CG1r1","CG2r1","CG3r1","CG4r1","CG5r1","CG6r1","CG7r1","CG8r1","CG9r1","CG10r1","CG11r1","CG12r1")
+
+#Take only heterozygosity samples
+study_participants_info_het_as2B <- data.frame(paste0(study_participants_info_het$Sample1,"_as2B"))
+colnames(study_participants_info_het_as2B) <- "Sample"
+as2Bnewsample_R1_color <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/sample_color_as2B.txt")
+colnames(as2Bnewsample_R1_color) <- c("Sample","Condition","Combine")
+
+as2Bnewsample_R1_color_het <- merge(as2Bnewsample_R1_color, study_participants_info_het_as2B, by="Sample")
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col <- merge(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate, as2Bnewsample_R1_color_het, by="Sample")
+rownames(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col) <- set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col$Combine
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col <- set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col[,c(2:13)]
+head(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col)
+#Remove undetermined
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col <- set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col[c(-48),]
+sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col <- stack(as.matrix(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col))
+head(sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col)
+write.table(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col,"/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/minus_ref_subNant_NnS_as2B_R1/set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col.txt", sep = "\t", quote = F, append = F)
+sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col <- data.frame(sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col)
+sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col <- splitstackshape::cSplit(sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col,"row","%")
+sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col <- data.frame(sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col)
+#python3 determine_CpG_position_reverse.py  enter-- /media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R1_nospace.fa
+as2Bref_Nnat_CGsitesR1 <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/minus_ref_subNant_NnS_as2B_R1/CGSites.txt")
+colnames(as2Bref_Nnat_CGsitesR1) <- c("col", "sites")
+sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg <- merge(sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_col, as2Bref_Nnat_CGsitesR1, by="col")
+dim(sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg)
+
+
+
+#Set1 and set2 R1 Cases 1-13
+set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het <- merge(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py, as2Bnewsample_R1_color_het, by="Sample", all.y=T)
+dim(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het)
+plot_list=list()
+for (j in unique(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het$Sample)[c(1:13)]){
+  samplecodes <- j
+  print(samplecodes)
+  altempframe <- set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het[which(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het$Sample == samplecodes),]
+  #print(tempframe)
+  alpheatmapoutput <- pheatmap::pheatmap(altempframe[,2:14],color = colorRampPalette(c("darkblue", "white", "firebrick3"))(length(breaksListd)), breaks = breaksListd,fontsize = 7,clustering_distance_cols = "euclidean",cluster_rows = F,cluster_cols = F,clustering_method = "ward.D", border_color = "white",show_rownames = F, show_colnames = F,cellwidth = 2,legend = F,labels_col = T, main= samplecodes)
+  plot_list[[samplecodes]] <- alpheatmapoutput[[4]]
+  grid.arrange(grobs=plot_list, ncol=7, nrow=2)
+}
+
+#save as set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het_cases1_13.pdf
+
+#Set1 and set2 R1 Control 1-11
+
+plot_list=list()
+for (j in unique(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het$Sample)[c(14:24)]){
+  samplecodes <- j
+  print(samplecodes)
+  altempframe <- set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het[which(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het$Sample == samplecodes),]
+  #print(tempframe)
+  alpheatmapoutput <- pheatmap::pheatmap(altempframe[,2:14],color = colorRampPalette(c("darkblue", "white", "firebrick3"))(length(breaksListd)), breaks = breaksListd,fontsize = 7,clustering_distance_cols = "euclidean",cluster_rows = F,cluster_cols = F,clustering_method = "ward.D", border_color = "white",show_rownames = F, show_colnames = F,cellwidth = 2,legend = F,labels_col = T, main= samplecodes)
+  plot_list[[samplecodes]] <- alpheatmapoutput[[4]]
+  grid.arrange(grobs=plot_list, ncol=7, nrow=2)
+}
+
+#save as set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het_control1_11.pdf
+
+
+#convert pdf to jpeg https://pdftoimage.com/
+
+head(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het,2)
+head(set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het,2)
+#convert pdf to jpeg https://pdftoimage.com/
+
+set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het <- rbind.data.frame(set1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_het, 
+                                                                                  set1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_het)
+
+
+dim(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het)
+set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het <- data.frame(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het)
+set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het <- set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het[order(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het$Sample),]
+plot_list=list()
+for (j in unique(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het$Sample)[c(1:26)]){
+  samplecodes <- j
+  print(samplecodes)
+  altempframe <- set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het[which(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het$Sample == samplecodes),]
+  #print(tempframe)
+  alpheatmapoutput <- pheatmap::pheatmap(altempframe[,2:14],color = colorRampPalette(c("darkblue", "white", "firebrick3"))(length(breaksListd)), breaks = breaksListd,fontsize = 7,clustering_distance_cols = "euclidean",cluster_rows = F,cluster_cols = F,clustering_method = "ward.D", border_color = "white",show_rownames = F, show_colnames = F,cellwidth = 2,legend = F,labels_col = T, main= samplecodes)
+  plot_list[[samplecodes]] <- alpheatmapoutput[[4]]
+  grid.arrange(grobs=plot_list, ncol=8, nrow=4)
+}
+
+#save as set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het_cases1_13.pdf
+
+#Set1 and set2 R1 Control 1-11
+
+plot_list=list()
+for (j in unique(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het$Sample)[c(14:24)]){
+  samplecodes <- j
+  print(samplecodes)
+  altempframe <- set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het[which(set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het$Sample == samplecodes),]
+  #print(tempframe)
+  alpheatmapoutput <- pheatmap::pheatmap(altempframe[,2:14],color = colorRampPalette(c("darkblue", "white", "firebrick3"))(length(breaksListd)), breaks = breaksListd,fontsize = 7,clustering_distance_cols = "euclidean",cluster_rows = F,cluster_cols = F,clustering_method = "ward.D", border_color = "white",show_rownames = F, show_colnames = F,cellwidth = 2,legend = F,labels_col = T, main= samplecodes)
+  plot_list[[samplecodes]] <- alpheatmapoutput[[4]]
+  grid.arrange(grobs=plot_list, ncol=7, nrow=2)
+}
+nonsharedR1cpgs <- read.table("/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/minus_ref_subNant_NnS_as2B_R1/nonsharedR1cpgs.txt")
+colnames(nonsharedR1cpgs) <- c("CpGs","sites")
+nonsharedsset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg <- merge(sset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg, nonsharedR1cpgs, by.x="sites", all.y =T)
+nonsharedsset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg <- merge(sset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg, nonsharedR1cpgs, by.x="sites", all.y =T)
+nonsharedsset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg <- nonsharedsset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg[,c(2,3,4,5,1)]
+nonsharedsset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg <- nonsharedsset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg[,c(2,3,4,5,1)]
+#save as set1nset2_tab_ref_subNnat_minus_as1Bnas2B_R1_NnSseries_py_het_control1_11.pdf
+dim(nonsharedsset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg)
+dim(nonsharedsset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg)
+dim(sset1nset2_tab_ref_subNnat_minus_as1B_R2_NnSseries_py_aggregate_cg)
+dim(sset1nset2_tab_ref_subNnat_minus_as2B_R2_NnSseries_py_aggregate_cg)
+sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries_py_aggregate_cg <- rbind.data.frame(nonsharedsset1nset2_tab_ref_subNnat_minus_as1B_R1_NnSseries_py_aggregate_cg,
+                                                                                             nonsharedsset1nset2_tab_ref_subNnat_minus_as2B_R1_NnSseries_py_aggregate_cg,
+                                                                                             sset1nset2_tab_ref_subNnat_minus_as1B_R2_NnSseries_py_aggregate_cg,
+                                                                                           sset1nset2_tab_ref_subNnat_minus_as2B_R2_NnSseries_py_aggregate_cg)
+library(data.table)
+allele_sp_subNnat.case.ids <- c("N15_S7","N18_S8","N23_S13","N24_S14","N27_S15","N33_S19","N34_S20","N37_S23","N39_S25","N40_S26","N42_S28","N43_S29","N5_S4")
+sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.case.ids_list <- list()
+
+for (myids.case in allele_sp_subNnat.case.ids){
+  print(myids.case)
+  temp3 <- sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries_py_aggregate_cg[sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries_py_aggregate_cg$row_1 %like% myids.case, ]
+  temp3p <- ggplot(temp3, aes(x=as.numeric(sites), y=value, group=row_1))+
+    geom_line(aes(color=row_1))+
+    geom_vline(xintercept = unique(temp3$sites), colour = "gray", linetype="solid")+
+    geom_point(aes(color=row_1), shape=20)+
+    theme_classic()+ ylim(0,1)+
+    scale_color_manual(values=c("darkorange","blue"))
+  sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.case.ids_list[[myids.case]] <- temp3p
+}
+
+
+pdf(file = "/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.case.ids_list.pdf", height = 10, width = 8)
+ggpubr::ggarrange(plotlist = sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.case.ids_list, ncol=2, nrow=7, common.legend = F, labels=NULL, vjust = 1,hjust=-0.5,font.label = list(size = 14, color = "black", face = "bold", family = NULL))
+dev.off()
+
+
+allele_sp_subNnat.control.ids <- c("S54","NC10_S34","NC12_S35","NC14_S37","NC19_S39","NC1_S30","NC3_S31","NC4_S32","NC7_S33","NC_S41","ND_S42")
+sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.control.ids_list <- list()
+
+for (myids.control in allele_sp_subNnat.control.ids){
+  print(myids.control)
+  temp3 <- sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries_py_aggregate_cg[sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries_py_aggregate_cg$row_1 %like% myids.control, ]
+  temp3p <- ggplot(temp3, aes(x=as.numeric(sites), y=value, group=row_1))+
+    geom_line(aes(color=row_1))+
+    geom_vline(xintercept = unique(temp3$sites), colour = "gray", linetype="solid")+
+    geom_point(aes(color=row_1), shape=20)+
+    theme_classic()+ ylim(0,1)+
+    scale_color_manual(values=c("darkorange","blue"))
+  sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.control.ids_list[[myids.control]] <- temp3p
+}
+
+
+pdf(file = "/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/allele_specific_2/sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.control.ids_list.pdf", height = 10, width = 8)
+ggpubr::ggarrange(plotlist = sset1nset2_tab_ref_subNnat_minus_as1Bas2B_R1R2_NnSseries.control.ids_list, ncol=2, nrow=7, common.legend = F, labels=NULL, vjust = 1,hjust=-0.5,font.label = list(size = 14, color = "black", face = "bold", family = NULL))
+dev.off()
 
 #convert pdf to jpeg https://pdftoimage.com/
 
