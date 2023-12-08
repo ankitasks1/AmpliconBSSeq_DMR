@@ -1,6 +1,15 @@
 import os, sys
 
+#fgrep -f NNAT_snp.txt /home/ankitv/ref_av/N-masked_hg38/commonSNPrefalt_allalt_chr_GRCh38_set_Acomb_Snpfile.txt -w | awk '{print NR"\t"$2"\t"$3"\t"$4"\t"$5}' > NNAT_commonSNPrefalt_GRCh38_Acomb_Snpfile.txt
+#fgrep -f NNAT_snp.txt /home/ankitv/ref_av/N-masked_hg38/commonSNPrefalt_allalt_chr_GRCh38_set_Bcomb_Snpfile.txt -w | awk '{print NR"\t"$2"\t"$3"\t"$4"\t"$5}' > NNAT_commonSNPrefalt_GRCh38_Bcomb_Snpfile.txt
+
+
 list_data = ('''
+S54 54_S54_L001_R1_001 54_S54_L001_R2_001
+S55 55_S55_L001_R1_001 55_S55_L001_R2_001
+S56 56_S56_L001_R1_001 56_S56_L001_R2_001
+S57 57_S57_L001_R1_001 57_S57_L001_R2_001
+S58 58_S58_L001_R1_001 58_S58_L001_R2_001
 N15_S7 15_S7_L001_R1_001 15_S7_L001_R2_001
 N18_S8 18_S8_L001_R1_001 18_S8_L001_R2_001
 N19_S9 19_S9_L001_R1_001 19_S9_L001_R2_001
@@ -86,8 +95,8 @@ for listx in list_data:
     os.system('cp ' + folder + '_bismark.sortedByReadname.bam ' + folder + '_bismark.sortedByReadname_Bcomb.bam')
 
     print ('SNPsplit...')
-    os.system('~/tools_av/SNPsplit_v0.3.2/SNPsplit --paired --bisulfite  --snp_file /home/ankitv/ref_av/Snpfiles/custom_commonSNPrefalt_GRCh38_Acomb_Snpfile.txt ' + folder + '_bismark.sortedByReadname_Acomb.bam')
-    os.system('~/tools_av/SNPsplit_v0.3.2/SNPsplit --paired --bisulfite  --snp_file /home/ankitv/ref_av/Snpfiles/custom_commonSNPrefalt_GRCh38_Bcomb_Snpfile.txt ' + folder + '_bismark.sortedByReadname_Bcomb.bam')
+    os.system('~/tools_av/SNPsplit_v0.3.2/SNPsplit --paired --bisulfite  --snp_file /home/ankitv/ref_av/Snpfiles/NNAT_commonSNPrefalt_GRCh38_Acomb_Snpfile.txt ' + folder + '_bismark.sortedByReadname_Acomb.bam')
+    os.system('~/tools_av/SNPsplit_v0.3.2/SNPsplit --paired --bisulfite  --snp_file /home/ankitv/ref_av/Snpfiles/NNAT_commonSNPrefalt_GRCh38_Bcomb_Snpfile.txt ' + folder + '_bismark.sortedByReadname_Bcomb.bam')
 
 
     print ('BAM to fasta')
@@ -112,6 +121,12 @@ for listx in list_data:
     os.system('head ' + folder + '_as2A_R1.fa -n 8000 > ' + folder + '_as2A_R1_top.fa')
     os.system('head ' + folder + '_as1B_R1.fa -n 8000 > ' + folder + '_as1B_R1_top.fa')
     os.system('head ' + folder + '_as2B_R1.fa -n 8000 > ' + folder + '_as2B_R1_top.fa')
+    os.system('head ' + folder + '_as1A_R2.fa -n 8000 > ' + folder + '_as1A_R2_top.fa')
+    os.system('head ' + folder + '_as2A_R2.fa -n 8000 > ' + folder + '_as2A_R2_top.fa')
+    os.system('head ' + folder + '_as1B_R2.fa -n 8000 > ' + folder + '_as1B_R2_top.fa')
+    os.system('head ' + folder + '_as2B_R2.fa -n 8000 > ' + folder + '_as2B_R2_top.fa')
+
+    os.system('rm *.fq.gz')
 
     print ('Methylation extraction...')
     #os.system('/home/ankitv/tools_av/Bismark-0.22.3/bismark_methylation_extractor --bedGraph --include_overlap --zero_based --cutoff 10 ' + read1 + '_val_1_bismark.sortedByReadname.bam')

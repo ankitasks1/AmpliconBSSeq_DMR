@@ -1,14 +1,14 @@
 import os,sys
 if os.path.exists('CGSites.txt'):
    os.remove('CGSites.txt')
-#R2 is in reverse so coordinates will be in reverse direction
-minus_ref_subNnat_R2 = open(input('Enter fasta file: '), 'r')
+#R1 is in reverse so coordinates will be in reverse direction
+minus_ref_subNnat_R1 = open(input('Enter fasta file: '), 'r')
 readtype = input('Enter readtype: ')
-minus_ref_subNnat_R2 = minus_ref_subNnat_R2.read()
-minus_ref_subNnat_R2 = minus_ref_subNnat_R2.strip().split('\n')
-#print(minus_ref_subNnat_R2)
+minus_ref_subNnat_R1 = minus_ref_subNnat_R1.read()
+minus_ref_subNnat_R1 = minus_ref_subNnat_R1.strip().split('\n')
+#print(minus_ref_subNnat_R1)
 
-header = minus_ref_subNnat_R2[0]
+header = minus_ref_subNnat_R1[0]
 header = header.split(' ')
 #print(header)
 coordinates = header[1]
@@ -17,7 +17,7 @@ coordinates = header[1]
 start  = coordinates.strip().split(':')
 start  = start[1].strip().split('-')
 #print(start)
-sequence = minus_ref_subNnat_R2[1]
+sequence = minus_ref_subNnat_R1[1]
 #print(sequence)
 sequence = list(sequence)
 SeqStart = 0

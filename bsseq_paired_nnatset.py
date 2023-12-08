@@ -1,5 +1,6 @@
 import os, sys
 
+#Follow these steps for preparing BiQ analyser inputs:
 #Get names ref should always be rc for Nnat
 #ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"_rc""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/ref_subNnat_R1_rc.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R1_rc.fa"}' > BiQsheetreplicate1_rc.tsv
 #ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"_rc""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/ref_subNnat_R2_rc.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R2_rc.fa"}' > BiQsheetreplicate2_rc.tsv
@@ -7,7 +8,18 @@ import os, sys
 #ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/ref_subNnat_R2_rc.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R2.fa"}' > BiQsheetreplicate2.tsv
 #ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"_rc""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/ref_subNnat_R1_rc.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R1_rc_top.fa"}' > BiQsheetreplicate1_rc_top.tsv
 #ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"_rc""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/ref_subNnat_R2_rc.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R2_rc_top.fa"}' > BiQsheetreplicate2_rc_top.tsv
-#ADD HEADER to EACH TSV Files
+
+#Prep for set1
+#ls -1 *.gz | awk -F'_' '{print $2}' | sort -k1,1 -u | awk '{print $1"\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R1.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/fastq_Laura/fastq_Laura/"$1"_R1.fa"}' | tail -n 5 > minus_SseriesBiQsheetR1.tsv
+#ls -1 *.gz | awk -F'_' '{print $2}' | sort -k1,1 -u | awk '{print $1"\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R2.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/fastq_Laura/fastq_Laura/"$1"_R2.fa"}' | tail -n 5 > minus_SseriesBiQsheetR2.tsv
+
+#Prep for set2
+#minus, since Nnat is amplified in reverse strand and also BiQ manual suggest to use the strand which was originally amplified by PCR
+#ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R1.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R1.fa"}' > minus_BiQsheetreplicate1.tsv
+#ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1"\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/minus_ref_subNnat_R2.fa""\t""/media/ankitv/Archivio2/ankit/bs-seq/human/newfastq_laura/fastq_laura/fastas/""N"$1"_R2.fa"}' > minus_BiQsheetreplicate2.tsv
+
+#Note:***************************** VERY IMPORTANT: ADD HEADER to EACH TSV Files otherwise it will not take the first file ****************************
+
 #Get names ls -1 *.gz | awk -F'_' '{print $1"_"$2}' | sort -k1,1 -u | awk '{print "N"$1" "$1"_L001_R1_001"" "$1"_L001_R2_001"}'
 list_data = ('''
 N15_S7 15_S7_L001_R1_001 15_S7_L001_R2_001
