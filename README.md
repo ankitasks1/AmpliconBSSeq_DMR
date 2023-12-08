@@ -1,7 +1,7 @@
-# Amplicon BSSeq_DMR
+# Amplicon BS-Seq for specfic locus: eg.DMR
 
 
-New analysis amplicon Dec 2021
+<u>New analysis amplicon Dec 2021</u>
 
 Python script for bsseq_paired_nnatset.py
 
